@@ -30,7 +30,8 @@ wire [3:0] frame_bytes = (i_rx_data_bits == 8'd24) ? 4'd6 :
 reg [31:0] phase_acc;
 wire [63:0] phase_step_wide = (i_sample_rate == 32'd0) ? 64'd0 : (({32'd0, i_sample_rate} << 32) / CLK_HZ);
 wire [31:0] phase_step = phase_step_wide[31:0];
-wire sample_event = (phase_acc[31] == 1'b0) && ((phase_acc + phase_step)[31] == 1'b1);
+wire [31:0] phase_next = phase_acc + phase_step;
+wire sample_event = (phase_acc[31] == 1'b0) && (phase_next[31] == 1'b1);
 wire can_read = (fifo_count >= frame_bytes);
 wire do_read = sample_event && can_read;
 wire do_write = i_audio_dval && !fifo_full;
